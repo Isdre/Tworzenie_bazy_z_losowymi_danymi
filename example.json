@@ -1,0 +1,21 @@
+{
+  "database": "postgres",
+  "table_name" : "example1",
+  "table_count": 3,
+  "column_0": {
+    "column_name": "id",
+    "column_type": "SERIAL",
+    "constrains": [
+      "PRIMARY KEY",
+      "NOT NULL"
+    ]
+  },
+  "column_1": {
+    "column_name": "name", "column_type":"CHAR(255)",
+    "constrains": []
+  },
+  "column_2": {
+    "column_name": "data", "column_type":"DATE",
+    "constrains": ["NOT NULL"]
+  }
+}
