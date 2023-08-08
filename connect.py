@@ -5,18 +5,6 @@ from enum import Enum
 class _ConnectionError(Exception):
     """_ConnectionError"""
 
-class ValueType(Enum):
-    SERIAL = "SERIAL",
-    Boolean = "Boolean",
-    CHAR = "CHAR",
-    VARCHAR = "VARCHAR",
-    TEXT = "TEXT",
-    SMALLINT = "SMALLINT",
-    INT = "INT",
-    float = "float",
-    float8 = "float8"
-
-
 class Connection:
     def __init__(self,json_filename : str) -> None:
         with open(json_filename, "r") as access_data_file:
@@ -63,17 +51,17 @@ class Connection:
 
         self.connection.commit()
 
-#import sys
+import sys
 
-#if __name__ == "__main__":
-    #log = sys.argv[1]
-    #tab = sys.argv[2]
+if __name__ == "__main__":
+    log = sys.argv[1]
+    mod = sys.argv[2]
 
-    #connect = Connection(log)
-    #print(connect.access_data["host"])
-    #print(connect.get_databases_list())
-    #print(connect.get_tables_list())
-    #connect.create_table_with_data(tab)
-    #python connect.py login.json example.json
-
+    connect = Connection(log)
+    if mod == "databases":
+        print(" ".join(connect.get_databases_list()))
+    elif mod == "tables":
+        print(" ".join(connect.get_tables_list()))
+    else:
+        connect.create_table_with_data(mod)
 
