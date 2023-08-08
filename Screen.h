@@ -8,9 +8,8 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <stdexcept>
-#include <stdio.h>
 #include <fstream>
+#include <windows.h>
 //ScreenException
 
 class Screen {
@@ -22,13 +21,15 @@ class Screen {
 
     std::string tableFileName;
 public:
-    Screen(std::string valueTypeFileName = "PostgreSQL_data_types.txt", std::string constrainsTypeFileName = "PostgreSQL_Constrains_Types.txt",std::string loginFileName = "login.json");
+    Screen() : valueType(), constraintType(), databases(), tables(), tableFileName() {};
+    Screen(std::string loginFileName, std::string valueTypeFileName = "PostgreSQL_data_types.txt", std::string constrainsTypeFileName = "PostgreSQL_Constrains_Types.txt");
     ~Screen();
     void PrintAllDatabases();
     void PrintAllTables();
-    //void GetInput();
+    void GetInput();
     //void MakeJsonFiles(std::string commend);
     //void CreateTable();
+    Screen operator=(Screen screen);
 };
 
 
