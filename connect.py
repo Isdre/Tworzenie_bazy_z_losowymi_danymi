@@ -1,6 +1,6 @@
 import json
 import psycopg2
-from enum import Enum
+import sys
 
 class _ConnectionError(Exception):
     """_ConnectionError"""
@@ -29,12 +29,6 @@ class Connection:
     def create_table_with_data(self,json_filename : str, howMany : int = 100) -> None:
         with open(json_filename, "r") as access_data_file:
             table_parameters = json.loads(access_data_file.read())
-        if table_parameters["database"] not in self.get_databases_list():
-            raise _ConnectionError("database doens't exist")
-            return
-        if table_parameters["database"] != self.actualDatabase:
-            self.actualDatabase = table_parameters["database"]
-            self.cursor.execute(f"USE {self.actualDatabase}")
         if table_parameters["table_name"] in self.get_tables_list():
             raise _ConnectionError("table already exists")
             return
@@ -51,11 +45,11 @@ class Connection:
 
         self.connection.commit()
 
-import sys
-
 if __name__ == "__main__":
     log = sys.argv[1]
     mod = sys.argv[2]
+
+    #print([log,mod])
 
     connect = Connection(log)
     if mod == "databases":
