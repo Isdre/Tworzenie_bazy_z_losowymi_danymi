@@ -6,16 +6,17 @@ import pandas as pd
 import numpy as np
 import random
 import datetime
-import time
+from datetime import date
+from datetime import datetime
 from sqlalchemy import create_engine
 
-def random_date(start, end, time_format = "%d/%m/%Y"):
-    stime = time.mktime(time.strptime(start, time_format))
-    etime = time.mktime(time.strptime(end, time_format))
+def random_date(start, end, date_format = "%d/%m/%Y"):
+    stime = datetime.strptime(start, date_format)
+    etime = datetime.strptime(end, date_format)
     prop = random.random()
     ptime = stime + prop * (etime - stime)
 
-    return time.strftime(time_format, time.localtime(ptime))
+    return datetime.strftime(ptime, date_format)
 
 class _ConnectionError(Exception):
     """_ConnectionError"""
@@ -65,11 +66,12 @@ class Connection:
         self.generate_data(columns, howMany)
 
     def generate_data(self, columns : list, count : int):
-        data = pd.DataFrame([])
+        data = pd.DataFrame()
+        index_label = None
         for col in columns:
             if col["column_type"] == "SERIAL":
-                #data[col["column_name"]] = range(1,count+1)
-                continue
+                #data[col["column_name"]] = list(range(1,count+1))
+                index_label = col["column_name"]
             elif col["column_type"] == "BOOLEAN":
                 if "UNIQUE" in col["constrains"] and count > 2: raise _ConnectionError("Unique boolean and count > 2")
                 data[col["column_name"]] = [bool(random.choice([0,1])) for i in range(count)]
@@ -78,22 +80,22 @@ class Connection:
                 if "UNIQUE" in col["constrains"]:
                     dat = set(dat)
                     while len(dat) < count:
-                        dat.add(random.randint())
+                        dat.add(random.randint(-10000,10000))
                 else:
-                    for i in range(count): dat.append(random.randint())
+                    for i in range(count): dat.append(random.randint(-10000,10000))
                 data[col["column_name"]] = list(dat)
             elif col["column_type"] == "REAL":
                 dat = []
                 if "UNIQUE" in col["constrains"]:
                     dat = set(dat)
                     while len(dat) < count:
-                        dat.add(random.uniform())
+                        dat.add(random.uniform(-10000,10000))
                 else:
-                    for i in range(count): dat.append(random.uniform())
+                    for i in range(count): dat.append(random.uniform(-10000,10000))
                 data[col["column_name"]] = list(dat)
             elif col["column_type"] == "DATE":
                 dat = []
-                now = datetime.now()
+                now = date.today()
                 if "UNIQUE" in col["constrains"]:
                     dat = set(dat)
                     while len(dat) < count:
@@ -108,12 +110,15 @@ class Connection:
                     while len(dat) < count:
                         dat.add("".join([string.ascii_letters for i in range(20)]))
                 else:
-                    for i in range(count): dat.append("".join([string.ascii_letters for i in range(20)]))
+                    for i in range(count): dat.append("".join([random.choice(string.ascii_letters) for i in range(20)]))
                 data[col["column_name"]] = list(dat)
 
-        engine = create_engine(f'postgresql+psycopg2://{self.access_data["user"]}:{self.access_data["password"]}@{self.access_data["host"]}:{self.access_data["5432"]}/{self.access_data["database"]}')
-
-        data.to_sql(self.table_parameters["table_name"], engine, if_exists='append',index=False)
+        engine = create_engine(f'postgresql+psycopg2://{self.access_data["user"]}:{self.access_data["password"]}@{self.access_data["host"]}:{self.access_data["port"]}/{self.access_data["database"]}')
+        print(data)
+        if index_label is not None:
+            data.to_sql(self.table_parameters["table_name"], engine, if_exists='append', index_label=index_label)
+        else:
+            data.to_sql(self.table_parameters["table_name"], engine, if_exists='append', index=False)
 
 
 if __name__ == "__main__":
