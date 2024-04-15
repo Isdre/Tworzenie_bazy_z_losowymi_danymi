@@ -5,5 +5,6 @@ I hate manually inserting data to tables so I made program to create tables of r
 TO ADD/DO:
 - more value types
 - add table to another database
+- create database
 - add data to existing table
 - refactor code
